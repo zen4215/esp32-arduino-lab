@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <nnct_lib.hpp>
 #include "driver/twai.h"
+#include "error_sleep.hpp"
 
 nnct::components::Watchdog wd(1000);
 
@@ -28,23 +29,19 @@ void test_twai_setup() {
     if(twai_driver_install(&general_config, &timing_config, &filter_config) != ESP_OK) {
         Serial.println("twai driver install failed!");
 
-        while(1) {
-
-        }
+        error_sleep();
     }
     
     if(twai_start() != ESP_OK) {
         Serial.println("twai start failed!");
         
-        while(1) {
-
-        }
+        error_sleep();
     }
 }
 
 void test_twai_loop() {
     twai_message_t rx_msg;
-    if(twai_receive(&rx_msg, portMAX_DELAY) == ESP_OK) {
+    if(twai_receive(&rx_msg, pdMS_TO_TICKS(1000)) == ESP_OK) {
         Serial.println("received!");
     }
     
