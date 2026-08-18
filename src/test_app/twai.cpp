@@ -7,6 +7,16 @@
 
 nnct::components::Watchdog wd(1000);
 
+void receive_task(void *arg) {
+    for(;;) {
+        twai_message_t rx_msg;
+        
+        if(twai_receive(&rx_msg, portMAX_DELAY) == ESP_OK) {
+            Serial.println("received!");
+        }
+    }
+}
+
 void test_twai_setup() {
     Serial.begin(9600);
 
@@ -37,14 +47,11 @@ void test_twai_setup() {
         
         error_sleep();
     }
+
+    xTaskCreate(receive_task, "twai test receive task", 4096, nullptr, 2, nullptr);
 }
 
 void test_twai_loop() {
-    twai_message_t rx_msg;
-    if(twai_receive(&rx_msg, pdMS_TO_TICKS(1000)) == ESP_OK) {
-        Serial.println("received!");
-    }
-    
     if(wd.update(millis())) {
         twai_message_t tx_msg = {
             .flags = TWAI_MSG_FLAG_NONE,
