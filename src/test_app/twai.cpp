@@ -1,5 +1,3 @@
-#include "WString.h"
-#include "hal/twai_types.h"
 #include "test_app.hpp"
 
 #include <Arduino.h>
